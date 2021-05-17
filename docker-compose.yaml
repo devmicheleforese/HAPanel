@@ -6,8 +6,6 @@ services:
     ports:
       - "8086:8086"
     restart: always
-    volumes: 
-      - influxdb_data:/var/lib/influxdb_data
-
-volumes:
-  influxdb_data:
+    volumes:
+      - influxdb/influxdb_data:/var/lib/influxdb_data
+      - influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
