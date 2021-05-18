@@ -1,4 +1,59 @@
-# OpenHab on CPanel
+# OpenHab on CPanel HAPanel
+
+## [OPTIONAL] openHAB Docker
+
+1. Create the `openhab` user and group
+
+   ```terminal
+   groupadd -g 9001 openhab
+   useradd -u 9001 -g openhab -r -s /sbin/nologin openhab
+   ```
+
+2. Add your regular user to the `openhab` group
+
+   ```terminal
+   usermod -a -G openhab <user>
+   usermod -a -G openhab pi
+   ```
+
+3. Create the openHAB conf, userdata, and addon directories
+
+   ```terminal
+   sudo mkdir -p ~/openHAB/{conf,userdata,addons,services}
+   sudo chown -R openhab:openhab ~/openHAB
+   ```
+
+4. Install SAMBA
+
+   ```terminal
+   sudo apt install samba samba-common-bin
+   ```
+
+5. Config SAMBA
+
+   ```terminal
+   sudo nano /etc/samba/smb.conf
+   ```
+
+6. Add those lines
+
+   ```terminal
+   [Home]
+   comment = Home Server
+   path = home/pi
+   browseable = yes
+   read only = no
+   guest ok = yes
+   public = yes
+   ```
+
+7. Exit with `CTRL +`
+
+8. Reboot SAMBA
+
+   ```terminal
+   sudo service smbd restart
+   ```
 
 ## Install Openhabian distro
 
@@ -60,6 +115,16 @@ password: openhabian
    ```terminal
    sudo pip3 -v install docker-compose
    ```
+
+## Get the ID and Group
+
+1. Get the ID and Group
+
+   ```terminal
+   id openhab
+   ```
+
+2. Change ID and Group on docker-compose.yaml
 
 ## Install Influxdb
 
@@ -129,24 +194,92 @@ password: openhabian
 
 5. Open Database
 
-```terminal
-use openhab3
-```
+   ```terminal
+   use openhab3
+   ```
 
 6. Create Admin User
 
-```terminal
-create user admin with password 'openhab' with all privileges
-```
+   ```terminal
+   create user admin with password 'openhab' with all privileges
+   ```
 
 7. Create influxdb config file
 
+   ```terminal
+   influxd config > /var/lib/influxdb/influxdb.conf
+   ```
+
+8. Change config file
+
+   ```terminal
+   nano influxdb.conf
+   ```
+
+   Change this line
+
+   ```terminal
+   [http]
+      auth-enabled = true
+   ```
+
+9. Authenticate
+
+   ```terminal
+   influxdb
+   auth
+   ```
+
+   - username: admin
+   - password: admin #IDK
+
+10. Change openHAB credentials for DB
+
+    ```terminal
+    sudo nano influxdb.cfg
+    ```
+
+11. Create `openhab` user in influxdb
+
+    ```terminal
+    create user openhab with password 'openhab`
+    ```
+
+## To check if influxdb is active
+
+1. Access with `openhab` user
+
+   ```terminal
+   influx
+   auth
+      username: openhab
+      password: openhab
+   ```
+
+2. Check data
+
 ```terminal
-influxd config > /var/lib/influxdb/influxdb.conf
+use openhab3
+show measurements
+precision rfc3339
+select * from <table> order by time DeSC limit
 ```
 
 [comment]: # "Docker Section"
 
-```
+```terminal
 
 ```
+
+## Upgrading
+
+1. Stop the container
+2. Delete the container
+3. Pull down the latest image
+4. Create a `userdata/backup` folder f one does not exist
+5. Create a full backup of userdata as a dated tar file saved to `userdata/backup`. The `userdata/backup` folder is excluded from this backup.
+6. Show update notes and warnings.
+7. Execute update pre/post commands.
+8. Copy userdata system files from `dist/userdata/etc` to `userdata/etc`.
+9. Update KAR files in `addons`.
+10. Delete the contents of `userdata/cache` and `userdata/tmp`.
