@@ -19,41 +19,18 @@
 3. Create the openHAB conf, userdata, and addon directories
 
    ```terminal
-   sudo mkdir -p ~/openHAB/{conf,userdata,addons,services}
-   sudo chown -R openhab:openhab ~/openHAB
+   sudo mkdir -p ~/HAPanel/openHAB/{conf,userdata,addons,services}
+   sudo mkdir -p ~/HAPanel/influxdb/{db_data}
+   sudo mkdir -p ~/HAPanel/grafana/{data,logs,plugins,provisioning}
+
+   sudo chown -R openhab:openhab ~/HAPanel
    ```
 
-4. Install SAMBA
+4. [optional] Install tree utility
 
-   ```terminal
-   sudo apt install samba samba-common-bin
-   ```
-
-5. Config SAMBA
-
-   ```terminal
-   sudo nano /etc/samba/smb.conf
-   ```
-
-6. Add those lines
-
-   ```terminal
-   [Home]
-   comment = Home Server
-   path = home/pi
-   browseable = yes
-   read only = no
-   guest ok = yes
-   public = yes
-   ```
-
-7. Exit with `CTRL +`
-
-8. Reboot SAMBA
-
-   ```terminal
-   sudo service smbd restart
-   ```
+````terminal
+sudo apt-get install tree
+```
 
 ## Install Openhabian distro
 
@@ -80,7 +57,7 @@
 ```terminal
 user: openhabian
 password: openhabian
-```
+````
 
 ## Install Docker
 
@@ -283,3 +260,19 @@ select * from <table> order by time DeSC limit
 8. Copy userdata system files from `dist/userdata/etc` to `userdata/etc`.
 9. Update KAR files in `addons`.
 10. Delete the contents of `userdata/cache` and `userdata/tmp`.
+
+## Upgrade InfluxDB
+
+1. Stop the openHAB container
+
+```terminal
+docker container stop openHAB
+```
+
+2. Connect with Influxdb container
+
+```terminal
+docker exec -it influxdb /bin/bash
+```
+
+// TODO: Da fare
