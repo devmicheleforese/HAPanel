@@ -1,0 +1,14 @@
+# openHAB
+openHAB/addons
+openHAB/conf
+openHAB/userdata
+openHAB/services
+
+# influxdb
+influxdb/db_data
+
+# grafana
+grafana/data
+grafana/config
+grafana/logs
+grafana/plugins

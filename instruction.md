@@ -22,15 +22,32 @@
    sudo mkdir -p ~/HAPanel/openHAB/{conf,userdata,addons,services}
    sudo mkdir -p ~/HAPanel/influxdb/{db_data}
    sudo mkdir -p ~/HAPanel/grafana/{data,logs,plugins,provisioning}
+   sudo mkdir -p ~/HAPanel/mosquitto/{data,logs}
 
    sudo chown -R openhab:openhab ~/HAPanel
    ```
 
-4. [optional] Install tree utility
+4. Config file for mosquitto
 
-````terminal
-sudo apt-get install tree
-```
+   ```terminal
+   cat << EOF > mosquitto.conf
+   persistence true
+   persistence_location /mosquitto/data/
+   log_dest file /mosquitto/log/mosquitto.log
+   EOF
+   ```
+
+5. To subscribe to the topic `test`
+
+   ```terminal
+   mosquitto_sub -t test
+   ```
+
+6. [optional] Install tree utility
+
+   ```terminal
+   sudo apt-get install tree
+   ```
 
 ## Install Openhabian distro
 
@@ -57,7 +74,7 @@ sudo apt-get install tree
 ```terminal
 user: openhabian
 password: openhabian
-````
+```
 
 ## Install Docker
 
@@ -65,14 +82,14 @@ password: openhabian
 2. Execute this commands
 
    ```terminal
-   curl -fsSL https://get.docker.com -o get-docker.sh
-   sudo sh get-docker.sh
+   sudo curl -fsSL https://get.docker.com -o ~/get-docker.sh
+   sudo sh ~/get-docker.sh
    ```
 
-3. [optional] Add permission to openhabian User to run Docker Commands without root permission
+3. [optional] Add permission to `pi` User to run Docker Commands without root permission
 
    ```terminal
-   sudo usermod -aG docker openhabian
+   sudo usermod -aG docker pi
    ```
 
    - Now reboot the device to admit changes
@@ -104,6 +121,8 @@ password: openhabian
 2. Change ID and Group on docker-compose.yaml
 
 ## Install Influxdb
+
+// TODO: Da rifare
 
 1. Create a directory from user home with those commands
 

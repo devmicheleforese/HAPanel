@@ -9,21 +9,21 @@ datasources:
     type: influxdb
     access: proxy
     url: http://influxdb
-    user: openhab
-    password: openhab
+    user: openhabinfluxdb
+    password: openhabinfluxdb
     database: openhab3
     basicAuth: false
-    basicAuthUser:
-    basicAuthPassword:
-    withCredentials:
+    # basicAuthUser:
+    # basicAuthPassword:
+    # withCredentials:
     isDefault: true
     jsonData:
       httpMode: POST
       tlsAuth: false
       tlsAuthWithCACert: false
-    secureJsonData:
-      tlsCACert: ""
-      tlsClientCert: ""
-      tlsClientKey: ""
+    # secureJsonData:
+    #   tlsCACert: ""
+    #   tlsClientCert: ""
+    #   tlsClientKey: ""
     version: 1
     editable: true
