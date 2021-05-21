@@ -8,6 +8,7 @@ services:
     depends_on:
       - influxdb
       - grafana
+      - mosquitto
     network_mode: host
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
@@ -49,6 +50,8 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana
+    depends_on:
+      - influxdb
     ports:
       - "3000:3000"
     environment:
