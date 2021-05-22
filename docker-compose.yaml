@@ -147,9 +147,12 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
+      # We bind the entire config file for mosquitto
+      # for integrate the './mosquitto/config/mosquitto.conf' file
       - type: bind
-        source: ./mosquitto/config/mosquitto.conf
-        target: /mosquitto/config/mosquitto.conf
+        source: ./mosquitto/config
+        target: /mosquitto/config
+      # We bind the passwd for the user
       - type: bind
         source: ./mosquitto/config/mosquitto.passwd
         target: /mosquitto/config/mosquitto.passwd
@@ -157,7 +160,7 @@ services:
         source: ./mosquitto/data
         target: /mosquitto/data
       - type: bind
-        source: ./mosquitto/logs
+        source: ./mosquitto/log
         target: /mosquitto/log
 
 secrets:

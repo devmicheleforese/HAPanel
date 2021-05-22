@@ -41,7 +41,16 @@
    sudo chown -R openhab:openhab ~/HAPanel/openHAB
    ```
 
-4. Config file for mosquitto
+## Mosquitto credentials
+
+```terminal
+sudo docker container ls
+sudo docker exec -ti nostalgic_williams /bin/sh
+
+mosquitto_passwd -c /mosquitto/config/mosquitto.passwd mosquitto_openhab
+```
+
+1. Config file for mosquitto
 
    ```terminal
    cat << EOF > mosquitto.conf
@@ -51,13 +60,13 @@
    EOF
    ```
 
-5. To subscribe to the topic `test`
+2. To subscribe to the topic `test`
 
    ```terminal
    mosquitto_sub -t test
    ```
 
-6. [optional] Install tree utility
+3. [optional] Install tree utility
 
    ```terminal
    sudo apt-get install tree
@@ -313,6 +322,12 @@ and '[cmd] --help' for help on a specific command.
 To exit, use '<ctrl-d>' or 'logout'.
 
 openhab>
+```
+
+Accessing the OpenHab logs from the CLI:
+
+```terminal
+openhab> log:tail
 ```
 
 ### Restore settings from previous Backup
