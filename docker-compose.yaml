@@ -1,6 +1,41 @@
 version: "3.9"
 
 services:
+  nginx:
+    container_name: nginx:1
+    image: nginx
+    depends_on:
+      - php
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/conf.d/default.conf:ro
+      - type: bind
+        source: ./nginx/www
+        target: /html:ro
+      - type: bind
+        source: ./nginx/nginx-ssl.crt
+        target: /etc/nginx/chained.crt:ro
+      - type: bind
+        source: ./nginx/nginx-ssl.key
+        target: /etc/nginx/key.key:ro
+      - type: bind
+        source: ./nginx/htpasswd
+        target: /etc/nginx/htpasswd:ro
+
+  php:
+    container_name: php
+    image: php:8-fpm
+    restart: always
+    volumes:
+      - type: bind
+        source: ./nginx/www
+        target: /html
+
   openhab:
     container_name: openHAB
     image: "openhab/openhab:3.0.2"
@@ -10,20 +45,42 @@ services:
       - grafana
     network_mode: host
     volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
-      - "./openHAB/addons:/openhab/addons"
-      - "./openHAB/conf:/openhab/conf"
-      - "./openHAB/userdata:/openhab/userdata"
-      - "./openHAB/services:/etc/openhab/services"
-      - "./openHAB/cont-init.d:/etc/cont-init.d"
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime:ro
+      # Localtime zone
+      # ex: Europe/Berlin
+      # You can use also the file located in this directory
+      # ./timezone
+      - type: bind
+        source: /etc/timezone
+        # source: ./timezone
+        target: /etc/timezone:ro
+      - type: bind
+        source: ./openHAB/addons
+        target: /openhab/addons
+      - type: bind
+        source: ./openHAB/conf
+        target: /openhab/conf
+      - type: bind
+        source: ./openHAB/userdata
+        target: /openhab/userdata
+      - type: bind
+        source: ./openHAB/services
+        target: /etc/openhab/services
+      - type: bind
+        source: ./openHAB/backup
+        target: /backups
+      # - type: bind
+      #   source: ./openHAB/cont-init.d
+      #   target: /etc/cont-init.d
     environment:
       OPENHAB_HTTP_PORT: "8080"
       OPENHAB_HTTPS_PORT: "8443"
       EXTRA_JAVA_OPTS: "-Duser.timezone=Europe/Berlin"
       CRIPTO_POLICY: "unlimited"
-      # USER_ID: 9001
-      # GROUP_ID: 9001
+      USER_ID: 9001
+      GROUP_ID: 9001
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -40,8 +97,12 @@ services:
       # DOCKER_INFLUXDB_INIT_USERNAME__FILE: "/run/secrets/influxdb_admin_user"
       # DOCKER_INFLUXDB_INIT_PASSWORD__FILE: "/run/secrets/influxdb_admin_password"
     volumes:
-      - "./influxdb/db_data:/var/lib/influxdb_data"
-      - "./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf"
+      - type: bind
+        source: ./influxdb/db_data
+        target: /var/lib/influxdb_data
+      - type: bind
+        source: ./influxdb/influxdb.conf
+        target: /etc/influxdb/influxdb.conf
     # secrets:
     #   - influxdb_admin_user
     #   - influxdb_admin_password
@@ -56,12 +117,24 @@ services:
       GF_SECURITY_ADMIN_USER__FILE: "/run/secrets/grafana_admin_user"
       GF_SECURITY_ADMIN_PASSWORD__FILE: "/run/secrets/grafana_admin_password"
       GF_USERS_DEFAULT_THEME: "dark"
+      GF_SERVER_DOMAIN: "${HOSTNAME}"
+      GF_SERVER_ROOT_URL: "http://${HOSTNAME}:3000/grafana"
     volumes:
-      - "./grafana/data:/var/lib/grafana"
-      - "./grafana/config/grafana.ini:/etc/grafana/grafana.ini"
-      - "./grafana/logs:/var/log/grafana"
-      - "./grafana/plugins:/var/lib/grafana/plugins"
-      - "./grafana/provisioning:/etc/grafana/provisioning"
+      - type: bind
+        source: ./grafana/data
+        target: /var/lib/grafana
+      - type: bind
+        source: ./grafana/config/grafana.ini
+        target: /etc/grafana/grafana.ini
+      - type: bind
+        source: ./grafana/logs
+        target: /var/log/grafana
+      - type: bind
+        source: ./grafana/plugins
+        target: /var/lib/grafana/plugins
+      - type: bind
+        source: ./grafana/provisioning
+        target: /etc/grafana/provisioning
     secrets:
       - grafana_admin_user
       - grafana_admin_password
@@ -72,11 +145,20 @@ services:
     restart: always
     ports:
       - "1883:1883"
+      - "9001:9001"
     volumes:
-      - "./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf"
-      - "./mosquitto/config/mosquitto.passwd:/mosquitto/config/mosquitto.passwd"
-      - "./mosquitto/data:/mosquitto/data"
-      - "./mosquitto/logs:/mosquitto/log"
+      - type: bind
+        source: ./mosquitto/config/mosquitto.conf
+        target: /mosquitto/config/mosquitto.conf
+      - type: bind
+        source: ./mosquitto/config/mosquitto.passwd
+        target: /mosquitto/config/mosquitto.passwd
+      - type: bind
+        source: ./mosquitto/data
+        target: /mosquitto/data
+      - type: bind
+        source: ./mosquitto/logs
+        target: /mosquitto/log
 
 secrets:
   influxdb_admin_user:
