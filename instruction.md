@@ -1,61 +1,8 @@
 # OpenHab on CPanel HAPanel
 
-## [OPTIONAL] openHAB Docker
+## Install Raspbian OS
 
-1. Create the `openhab` user and group
-
-   ```terminal
-   groupadd -g 9001 openhab
-   useradd -u 9001 -g openhab -r -s /sbin/nologin openhab
-   ```
-
-2. Add your regular user to the `openhab` group
-
-   ```terminal
-   usermod -a -G openhab <user>
-   usermod -a -G openhab pi
-   ```
-
-3. Create the openHAB conf, userdata, and addon directories
-
-   ```terminal
-   sudo mkdir -p ~/HAPanel/openHAB/{conf,userdata,addons,services}
-   sudo mkdir -p ~/HAPanel/influxdb/{db_data}
-   sudo mkdir -p ~/HAPanel/grafana/{data,logs,plugins,provisioning}
-   sudo mkdir -p ~/HAPanel/mosquitto/{data,logs}
-
-   sudo chown -R openhab:openhab ~/HAPanel
-   ```
-
-4. Config file for mosquitto
-
-   ```terminal
-   cat << EOF > mosquitto.conf
-   persistence true
-   persistence_location /mosquitto/data/
-   log_dest file /mosquitto/log/mosquitto.log
-   EOF
-   ```
-
-5. To subscribe to the topic `test`
-
-   ```terminal
-   mosquitto_sub -t test
-   ```
-
-6. [optional] Install tree utility
-
-   ```terminal
-   sudo apt-get install tree
-   ```
-
-## Install Openhabian distro
-
-1. Go to [openHab Download](https://www.openhab.org/download/)
-2. Follow instruction on the site
-
-   - Download and Install [Etcher](https://www.balena.io/etcher/)
-   - Download the openHABian image (`.img.xz` file) for your system from [here](https://github.com/openhab/openhabian/releases/latest)
+1. Go download the Raspbian OS
 
 ## Modify the OS to create a bootable OS for the Panel
 
@@ -67,14 +14,63 @@
 6. Navigate with a web browser to [http://openhabian:8080](http://openhabian:8080)
 7. Continue by following the tutorial to get started
 
-## Login
+## openHAB Docker
 
-1. Login with this credetial:
+1. Create the `openhab` user and group
+
+   ```terminal
+   groupadd -g 9001 openhab
+   useradd -g 9001 openhab
+   ```
+
+2. Add your regular user to the `openhab` group
+
+   ```terminal
+   usermod -a -G openhab <user>
+   usermod -a -G openhab pi
+   ```
+
+3. Create the openHAB, inflixdb, grafana, mosquito, nginx directories
+
+   ```terminal
+   sudo mkdir -p ~/HAPanel/openHAB/{conf,userdata,addons,services}
+   sudo mkdir -p ~/HAPanel/influxdb/{db_data}
+   sudo mkdir -p ~/HAPanel/grafana/{data,logs,plugins,provisioning}
+   sudo mkdir -p ~/HAPanel/mosquitto/{data,logs}
+
+   sudo chown -R openhab:openhab ~/HAPanel/openHAB
+   ```
+
+## Mosquitto credentials
 
 ```terminal
-user: openhabian
-password: openhabian
+sudo docker container ls
+sudo docker exec -ti nostalgic_williams /bin/sh
+
+mosquitto_passwd -c /mosquitto/config/mosquitto.passwd mosquitto_openhab
 ```
+
+1. Config file for mosquitto
+
+   ```terminal
+   cat << EOF > mosquitto.conf
+   persistence true
+   persistence_location /mosquitto/data/
+   log_dest file /mosquitto/log/mosquitto.log
+   EOF
+   ```
+
+2. To subscribe to the topic `test`
+
+   ```terminal
+   mosquitto_sub -t test
+   ```
+
+3. [optional] Install tree utility
+
+   ```terminal
+   sudo apt-get install tree
+   ```
 
 ## Install Docker
 
@@ -110,27 +106,9 @@ password: openhabian
    sudo pip3 -v install docker-compose
    ```
 
-## Get the ID and Group
+## Initialize Docker container
 
-1. Get the ID and Group
-
-   ```terminal
-   id openhab
-   ```
-
-2. Change ID and Group on docker-compose.yaml
-
-## Install Influxdb
-
-// TODO: Da rifare
-
-1. Create a directory from user home with those commands
-
-   ```terminal
-   mkdir ~/openHAB/docker-influxdb
-   ```
-
-2. Download the docker-compose script from [here](https://github.com/devmicheleforese/docker-influxdb)
+1. Download the docker-compose script from [here](https://github.com/devmicheleforese/docker-influxdb)
 
    - Use scp to copy file through ssh
 
@@ -141,16 +119,16 @@ password: openhabian
      Example:
 
      ```terminal
-     scp /path/to/docker-compose.yaml openhabian@<PanelIP>:~/openHAB/docker-influxdb
+     scp /path/to/docker-compose.yaml pi@<PanelIP>:~/HAPanel/docker-compose.yaml
      ```
 
-3. Enter in the directory
+2. Enter in the directory
 
    ```terminal
-   cd ~/openHAB/docker-influxdb
+   cd ~/HAPanel
    ```
 
-4. Exec those commands for create a docker instance of the influx database system
+3. Exec those commands for create a docker instance of the influx database system
 
    ```terminal
    sudo docker-compose up -d
@@ -261,13 +239,113 @@ precision rfc3339
 select * from <table> order by time DeSC limit
 ```
 
-[comment]: # "Docker Section"
+## OpenHAB Docker Suite
+
+### Install
+
+Create al least one htpasswd user
 
 ```terminal
-
+mkdir -p ~/HAPanel/nginx
+echo -n 'user01:' >> ~/HAPanel/nginx/htpasswd
+openssl passwd -apr1 >> ~/HAPanel/nginx/htpasswd
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/HAPanel/nginx/nginx-ssl.key -out ~/HAPanel/nginx/nginx-ssl.crt
 ```
 
-## Upgrading
+Then start all containers by executing:
+
+```terminal
+docker-compose up -d
+```
+
+### Initialize InfluxDB
+
+The current Docker Image for InfluxDB doesn't support automatic creation of users and databases, so create one for OpenHAB manually:
+
+```terminal
+docker exec -it hma_influxdb influx
+```
+
+Inside the container execute the following queries:
+
+```terminal
+CREATE DATABASE openhab
+exit
+```
+
+## Update
+
+```terminal
+docker-compose pull
+docker-compose down
+docker-compose up -d
+```
+
+## Backup
+
+```terminal
+docker exec -i -t hma_influxdb /bin/bash /backups/backup-influxdb.bash
+docker exec -i -t hma_openhab /bin/bash /backups/backup-openhab.bash
+docker exec -i -t hma_grafana /bin/bash /backups/backup-grafana.bash
+```
+
+## Maintenance
+
+### Clean Up when things go wrong
+
+Delete the contents of `/opt/openhab/userdata/cache` and `/opt/openhab/userdata/tmp`
+
+```terminal
+rm -rf /opt/openhab/userdata/cache
+rm -rf /opt/openhab/userdata/tmp
+```
+
+### OpenHAB CLI
+
+Access the OpenHAB command line tool inside the Docker container from your host system:
+
+```terminal
+docker exec -it openhab /openhab/runtime/bin/client
+
+Logging in as openhab
+Password:  PASSWORD IS habopen
+
+                           _   _     _     ____
+   ___   ___   ___   ___  | | | |   / \   | __ )
+  / _ \ / _ \ / _ \ / _ \ | |_| |  / _ \  |  _ \
+ | (_) | (_) |  __/| | | ||  _  | / ___ \ | |_) )
+  \___/|  __/ \___/|_| |_||_| |_|/_/   \_\|____/
+       |_|       3.1.0-SNAPSHOT - Build #2099
+
+Use '<tab>' for a list of available commands
+and '[cmd] --help' for help on a specific command.
+To exit, use '<ctrl-d>' or 'logout'.
+
+openhab>
+```
+
+Accessing the OpenHab logs from the CLI:
+
+```terminal
+openhab> log:tail
+```
+
+### Restore settings from previous Backup
+
+#### InfluxDB
+
+```terminal
+docker-compose stop
+docker run -it --rm --volumes-from hma_influxdb influxdb /bin/bash
+tar xf /backups/2017-03-05T18-23-52-influxdb.tar.gz -C ~
+influxd restore -metadir /var/lib/influxdb/meta ~/2017-03-05T18-23-52-influxdb
+influxd restore -database openhab -datadir /var/lib/influxdb/data ~/2017-03-05T18-23-52-influxdb
+chown -R influxdb:influxdb /var/lib/influxdb
+exit
+docker-compose start
+```
+
+### Upgrading
 
 1. Stop the container
 2. Delete the container
@@ -280,18 +358,16 @@ select * from <table> order by time DeSC limit
 9. Update KAR files in `addons`.
 10. Delete the contents of `userdata/cache` and `userdata/tmp`.
 
-## Upgrade InfluxDB
+### Upgrade InfluxDB
 
 1. Stop the openHAB container
 
-```terminal
-docker container stop openHAB
-```
+   ```terminal
+   docker container stop openHAB
+   ```
 
 2. Connect with Influxdb container
 
-```terminal
-docker exec -it influxdb /bin/bash
-```
-
-// TODO: Da fare
+   ```terminal
+   docker exec -it influxdb /bin/bash
+   ```
