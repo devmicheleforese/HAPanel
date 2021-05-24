@@ -19,15 +19,15 @@
 1. Create the `openhab` user and group
 
    ```terminal
-   groupadd -g 9001 openhab
-   useradd -g 9001 openhab
+   sudo groupadd -g 9001 openhab
+   sudo useradd -g 9001 -r -s /sbin/nologin openhab
    ```
 
 2. Add your regular user to the `openhab` group
 
    ```terminal
-   usermod -a -G openhab <user>
-   usermod -a -G openhab pi
+   sudo usermod -a -G openhab <user>
+   sudo usermod -a -G openhab pi
    ```
 
 3. Create the openHAB, inflixdb, grafana, mosquito, nginx directories

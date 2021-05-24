@@ -69,7 +69,13 @@
 ## Continous Query
 
 ```terminal
-create continuous query "1h" ON "test_db" BEGIN SELECT mean(value) as VALUE INTO "day"."Gf_Kitchen_Sensor_Temperature" FROM "Gf_Kitchen_Sensor_Temperature" GROUP BY time(1h) END
+CREATE CONTINUOUS QUERY "1h" ON "openhab3"
+    BEGIN
+        SELECT mean(value) AS VALUE INTO
+        "day"."Gf_Kitchen_Sensor_Temperature"
+        FROM "Gf_Kitchen_Sensor_Temperature"
+        GROUP BY time(1h)
+    END
 ```
 
 ```terminal
@@ -85,4 +91,13 @@ value: <table_name>
 config: {
   piano: "terra"
 }
+```
+
+## Docker user
+
+1. Create a user
+
+```terminal
+sudo useradd -rs /bin/false influxdb
+sudo chown -r influxdb:influxdb .influxdb
 ```

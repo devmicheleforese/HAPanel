@@ -9,8 +9,8 @@ datasources:
     type: influxdb
     access: proxy
     url: http://influxdb
-    user: openhabinfluxdb
-    password: openhabinfluxdb
+    user: openhab
+    password: openhab
     database: openhab3
     basicAuth: false
     # basicAuthUser:
