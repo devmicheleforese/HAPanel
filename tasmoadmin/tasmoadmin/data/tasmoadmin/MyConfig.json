@@ -1,0 +1,20 @@
+{
+    "ota_server_ssl": "0",
+    "ota_server_ip": "172.20.0.2",
+    "ota_server_port": "80",
+    "username": "admin",
+    "password": "$2y$10$aT2uy05U1wUJ7monXZwOdO0Q4Z4ZaJ7H1uqMzuI1yMBVTD3FTdE3O",
+    "refreshtime": "8",
+    "current_git_tag": "v1.7.0",
+    "update_automatic_lang": "tasmota-sensors.bin",
+    "nightmode": "auto",
+    "login": "1",
+    "scan_from_ip": "192.168.4.0",
+    "scan_to_ip": "192.168.4.255",
+    "homepage": "start",
+    "check_for_updates": "3",
+    "minimize_resources": "1",
+    "update_channel": "docker",
+    "hide_copyright": "1",
+    "show_search": "1"
+}

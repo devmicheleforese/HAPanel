@@ -19,8 +19,8 @@ services:
       # You can use also the file located in this directory
       # ./timezone
       - type: bind
-        # - source: /etc/timezone
-        source: ./timezone
+        source: /etc/timezone
+        #source: ./timezone
         target: /etc/timezone:ro
       - type: bind
         source: ./openHAB/addons
@@ -161,17 +161,37 @@ services:
 config:
   # Influxdb
   influxdb-config:
-    -file: ./influxdb/config/influxdb.conf
+    - file: ./influxdb/config/influxdb.conf
   influxdb-init_db:
-    -file: ./influxdb/scripts/influxdb-init.iql
+    - file: ./influxdb/scripts/influxdb-init.iql
   # Grafana
   grafana-config:
     - file: ./grafana/config/grafana.ini
   # Mosquitto
   mosquitto-config:
     - file: ./mosquitto/config/mosquitto.conf
+  mosquitto-passwords:
+    - file: ./mosquitto/config/mosquitto.passwd
   mosquitto-init_db:
     -file: ./mosquitto/scripts/init-influxdb.sh
+
+  influx_init:
+    - file: ./configs/influxdb/init-influxdb.sh
+  influx_user:
+    - file: ./configs/influxdb/influxdb_user
+  nodered_settings:
+    - file: ./configs/nodered/nodered_settings.js
+  nodered_package:
+    - file: ./configs/nodered/nodered_package.json
+  mosquitto_passwords:
+    - file: ./configs/mosquitto/mosquitto_passwords
+  mosquitto_settings:
+    - file: ./configs/mosquitto/mosquitto.conf
+
+networks:
+  openhab_net:
+    driver: overlay
+    attachable: true
 
 secrets:
   # influxdb_admin_user:
