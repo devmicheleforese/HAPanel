@@ -80,13 +80,17 @@ sudo systemctl start ssh
 
    log_dest file /var/log/mosquitto/mosquitto.log
 
-   include_dir /etc/mosquitto/conf.d
-
    listener 1883
    password_file /etc/mosquitto/mosquitto.passwd
    ```
 
 4. Make a password file
+
+   ```terminal
+   sudo mosquitto_passwd -c /etc/mosquitto/mosquitto.passwd mosquitto_openhab
+   ```
+
+5. Config file setup
 
    ```terminal
    sudo mosquitto_passwd -c /etc/mosquitto/mosquitto.passwd mosquitto_openhab
