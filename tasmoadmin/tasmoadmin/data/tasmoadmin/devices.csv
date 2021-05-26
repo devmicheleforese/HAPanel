@@ -1,2 +1,2 @@
-1,Tasmota,192.168.4.145,admin,,bulb_1,1
-2,Tasmota,192.168.4.152,admin,,bulb_1,2
+1,"Left Tasmota",192.168.4.145,admin,,bulb_1,1,1,0,0
+2,"Right Tasmota",192.168.4.152,admin,,bulb_1,2,1,0,0

@@ -31,23 +31,23 @@ sudo systemctl enable ssh
 sudo systemctl start ssh
 ```
 
-# Install openHAB
+## Install openHAB
 
 1. Install OpenJDK
 
-```terminal
-sudo apt update
-sudo apt install -y default-jdk
-sudo apt install openjdk-8-jdk
-```
+   ```terminal
+   sudo apt update
+   sudo apt install -y default-jdk
+   sudo apt install openjdk-8-jdk
+   ```
 
 2. Follow [this](https://www.openhab.org/download/) instruction.
 3. Activate openHAB on startup
 
-```terminal
-sudo /bin/systemctl enable openhab.service
-sudo /bin/systemctl start openhab.service
-```
+   ```terminal
+   sudo /bin/systemctl enable openhab.service
+   sudo /bin/systemctl start openhab.service
+   ```
 
 ## Install Mosquitto
 
