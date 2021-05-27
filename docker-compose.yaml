@@ -103,9 +103,9 @@ secrets:
     file: "./docker/influx/secrets/influx_admin_passwd"
   # Grafana
   grafana_admin_user:
-    file: "./sectrets/grafana/grafana_admin_user"
+    file: "./grafana/secrets/grafana_admin_user"
   grafana_admin_password:
-    file: "./sectrets/grafana/grafana_admin_password"
+    file: "./grafana/secrets/grafana_admin_password"
 #------------------------------------------------------------#
 # version: "3.9"
 
