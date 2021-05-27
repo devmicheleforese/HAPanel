@@ -10,8 +10,8 @@ fi
 
 mkdir -p /var/run/mosquitto && chown --no-dereference --recursive mosquitto /var/run/mosquitto
 
+mosquitto --config-file /mosquitto/config/mosquitto.conf
 mosquitto_passwd -b /mosquitto/config/mosquitto.passwd ${MOSQUITTO_USERNAME} ${MOSQUITTO_PASSWORD}
 
-mosquitto --config-file /mosquitto/config/mosquitto.conf
 
 exec "$@"

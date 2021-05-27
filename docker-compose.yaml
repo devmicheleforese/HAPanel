@@ -62,14 +62,14 @@ services:
       - "9001:9001"
     volumes:
       - type: bind
-        source: ./mosquitto/data
+        source: ./volumes/mosquitto/data
         target: /mosquitto/data
       - type: bind
-        source: ./mosquitto/log
+        source: ./volumes/mosquitto/log
         target: /mosquitto/log
       - type: bind
-        source: ./mosquitto/config/mosquitto.conf
-        target: /mosquitto/config/mosquitto.conf
+        source: ./volumes/mosquitto/config/
+        target: /mosquitto/config/
       - type: bind
         source: ./docker/mosquitto/docker-entrypoint.sh
         target: /docker-entrypoint-initdb.d/docker-entrypoint.sh
@@ -82,7 +82,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ./tasmoadmin/data
+        source: ./volumes/tasmoadmin/data
         target: /data
 
 secrets:
