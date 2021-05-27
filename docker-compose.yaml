@@ -8,44 +8,42 @@ services:
     ports:
       - "8086:8086"
     restart: always
-    env_file: docker/influx/.env
+    # env_file: docker/influx/.env
     volumes:
       - type: bind
         source: ./volumes/influxdb/db_data
         target: /var/lib/influxdb
-      # - type: bind
-      #   source: ./docker/influx/init-influxdb.sh
-      #   target: /init-influxdb.sh
-    secrets:
-      - influx_user
-      - influx_passwd
-      - influx_admin_user
-      - influx_admin_passwd
+    # secrets:
+    #   - influx_user
+    #   - influx_passwd
+    #   - influx_admin_user
+    #   - influx_admin_passwd
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:latest
+    image: grafana/grafana:7.5.2
     #env_file: docker/grafana/.env
     depends_on:
       - db
     ports:
       - "3000:3000"
     volumes:
-      - type: bind
-        source: ./volumes/grafana/data
-        target: /var/lib/grafana
-      - type: bind
-        source: ./volumes/grafana/home
-        target: /usr/share/grafana
-      - type: bind
-        source: ./volumes/grafana/log
-        target: /var/log/grafana
-      - type: bind
-        source: ./volumes/grafana/plugins
-        target: /var/lib/grafana/plugins
-      - type: bind
-        source: ./volumes/grafana/provisioning
-        target: /etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+      # - type: bind
+      #   source: ./volumes/grafana/data
+      #   target: /var/lib/grafana
+      # - type: bind
+      #   source: ./volumes/grafana/home
+      #   target: /usr/share/grafana
+      # - type: bind
+      #   source: ./volumes/grafana/log
+      #   target: /var/log/grafana
+      # - type: bind
+      #   source: ./volumes/grafana/plugins
+      #   target: /var/lib/grafana/plugins
+      # - type: bind
+      #   source: ./volumes/grafana/provisioning
+      #   target: /etc/grafana/provisioning
 
   mosquitto:
     image: eclipse-mosquitto:${MOSQUITTO_VERSION:-latest}
@@ -85,6 +83,8 @@ services:
         source: ./volumes/tasmoadmin/data
         target: /data
 
+volumes:
+  grafana_data:
 secrets:
   # Influx
   influx_user:
