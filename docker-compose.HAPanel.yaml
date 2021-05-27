@@ -1,24 +1,18 @@
 version: "3.9"
 
 services:
-  influxdb:
+  db:
     container_name: influxdb
-    image: "arm32v7/influxdb:1.8"
+    image: "arm32v7/influxdb:2.0"
     ports:
       - "8086:8086"
     restart: always
-    network_mode: bridge
     env_file: docker/influxdb/.env
     volumes:
-      - type: bind
-        source: ./influxdb/db_data
+      - type: volume
+        source: ./volumes/influxdb/db_data
         target: /var/lib/influxdb
-      - type: bind
-        source: ./influxdb/config/influxdb.conf
-        target: /etc/influxdb/influxdb.conf
-      - type: bind
-        source: ./influxdb/scripts
-        target: /docker-entrypoint-initdb.d/
+    secrets:
 
   grafana:
     container_name: grafana
@@ -94,6 +88,10 @@ services:
         target: /data
 
 secrets:
+  influx_user:
+    file: "./docker/influx/secrets/influx_user"
+  influx_passwd:
+    file: "./docker/influx/secrets/influx_passwd"
   grafana_admin_user:
     file: "./sectrets/grafana/grafana_admin_user"
   grafana_admin_password:

@@ -1,88 +1,25 @@
 version: "3.9"
 
 services:
-  openhab:
-    container_name: openHAB
-    image: "openhab/openhab:3.0.2"
-    restart: always
-    depends_on:
-      - influxdb
-      - grafana
-      - mosquitto
-    network_mode: host
-    volumes:
-      - type: bind
-        source: /etc/localtime
-        target: /etc/localtime:ro
-      # Localtime zone
-      # ex: Europe/Berlin
-      # You can use also the file located in this directory
-      # ./timezone
-      - type: bind
-        source: /etc/timezone
-        target: /etc/timezone:ro
-      - type: bind
-        source: ./openHAB/addons
-        target: /openhab/addons
-      - type: bind
-        source: ./openHAB/conf
-        target: /openhab/conf
-      - type: bind
-        source: ./openHAB/userdata
-        target: /openhab/userdata
-      - type: bind
-        source: ./openHAB/services
-        target: /etc/openhab/services
-      # This is the html location
-      # Access with "https://192.168.1.81:8080/static/{html_file_name}"
-      - type: bind
-        source: ./openHAB/html
-        target: /etc/openhab/html
-      # Directory for the trasformation JS files
-      - type: bind
-        source: ./openHAB/trasform
-        target: /etc/openhab/trasform
-      - type: bind
-        source: ./openHAB/backup
-        target: /backups
-      # - type: bind
-      #   source: ./openHAB/cont-init.d
-      #   target: /etc/cont-init.d
-    environment:
-      OPENHAB_HTTP_PORT: "8080"
-      OPENHAB_HTTPS_PORT: "8443"
-      EXTRA_JAVA_OPTS: "-Duser.timezone=Europe/Berlin"
-      CRIPTO_POLICY: "unlimited"
-      USER_ID: 9001
-      GROUP_ID: 9001
-    ports:
-      - "8080:8080"
-      - "8443:8443"
-
-  influxdb:
+  db:
     container_name: influxdb
-    image: "arm32v7/influxdb:1.8"
+    image: "arm32v7/influxdb:latest"
     ports:
       - "8086:8086"
     restart: always
-    environment:
-      DOCKER_INFLUXDB_INIT_USERNAME: "openhab"
-      DOCKER_INFLUXDB_INIT_PASSWORD: "openhab"
-      DOCKER_INFLUXDB_HTTP_AUTH_ENABLED: "true"
-      # DOCKER_INFLUXDB_INIT_USERNAME__FILE: "/run/secrets/influxdb_admin_user"
-      # DOCKER_INFLUXDB_INIT_PASSWORD__FILE: "/run/secrets/influxdb_admin_password"
-    config:
-      - source: influxdb-config
-        target: /etc/influxdb/influxdb.conf
-      - source: influxdb-init_db
-        target: /docker-entrypoint-initdb.d/influxdb-init.iql
+    env_file: docker/influxdb/.env
     volumes:
       - type: bind
-        source: ./influxdb/db_data
+        source: ./volumes/influxdb/db_data
         target: /var/lib/influxdb
-    command:
-      - "influx"
-      - "-config /etc/influxdb/influxdb.conf"
+      - type: bind
+        source: ./docker/influx/init-influxdb.sh
+        target: /init-influxdb.sh
+    secrets:
+      - influx_user
+      - influx_passwd
+      - influx_admin_user
+      - influx_admin_passwd
 
   grafana:
     container_name: grafana
@@ -126,18 +63,12 @@ services:
       args:
         - MOSQUITTO_VERSION=${MOSQUITTO_VERSION:-latest}
     container_name: mosquitto
-    environment:
-      - MOSQUITTO_USERNAME=${MOSQUITTO_USERNAME}
-      - MOSQUITTO_PASSWORD=${MOSQUITTO_PASSWORD}
+    env_file: docker/mosquitto/.env
     restart: always
     ports:
       - "1883:1883"
       - "9001:9001"
     configs:
-      - source: mosquitto-config
-        target: /mosquitto/config/mosquitto.conf
-      - source: mosquitto-init_db
-        target: /docker-entrypoint-initdb.d/init-influxdb.sh
     volumes:
       - type: bind
         source: ./mosquitto/data
@@ -145,6 +76,12 @@ services:
       - type: bind
         source: ./mosquitto/log
         target: /mosquitto/log
+      - type: bind
+        source: ./mosquitto/config/mosquitto.conf
+        target: /mosquitto/config/mosquitto.conf
+      - type: bind
+        source: ./docker/mosquitto/docker-entrypoint.sh
+        target: /docker-entrypoint-initdb.d/docker-entrypoint.sh
 
   tasmoadmin:
     container_name: tasmoadmin
@@ -157,47 +94,79 @@ services:
         source: ./tasmoadmin/data
         target: /data
 
-config:
-  # Influxdb
-  influxdb-config:
-    - file: ./influxdb/config/influxdb.conf
-  influxdb-init_db:
-    - file: ./influxdb/scripts/influxdb-init.iql
-  # Grafana
-  grafana-config:
-    - file: ./grafana/config/grafana.ini
-  # Mosquitto
-  mosquitto-config:
-    - file: ./mosquitto/config/mosquitto.conf
-  mosquitto-passwords:
-    - file: ./mosquitto/config/mosquitto.passwd
-  mosquitto-init_db:
-    -file: ./mosquitto/scripts/init-influxdb.sh
-
-  influx_init:
-    - file: ./configs/influxdb/init-influxdb.sh
-  influx_user:
-    - file: ./configs/influxdb/influxdb_user
-  nodered_settings:
-    - file: ./configs/nodered/nodered_settings.js
-  nodered_package:
-    - file: ./configs/nodered/nodered_package.json
-  mosquitto_passwords:
-    - file: ./configs/mosquitto/mosquitto_passwords
-  mosquitto_settings:
-    - file: ./configs/mosquitto/mosquitto.conf
-
-networks:
-  openhab_net:
-    driver: overlay
-    attachable: true
-
 secrets:
-  # influxdb_admin_user:
-  #   file: "./sectrets/influxdb/influxdb_admin_user"
-  # influxdb_admin_password:
-  #   file: "./sectrets/influxdb/influxdb_admin_password"
+  # Influx
+  influx_user:
+    file: "./docker/influx/secrets/influx_user"
+  influx_passwd:
+    file: "./docker/influx/secrets/influx_passwd"
+  influx_admin_user:
+    file: "./docker/influx/secrets/influx_admin_user"
+  influx_admin_passwd:
+    file: "./docker/influx/secrets/influx_admin_passwd"
+  # Grafana
   grafana_admin_user:
     file: "./sectrets/grafana/grafana_admin_user"
   grafana_admin_password:
     file: "./sectrets/grafana/grafana_admin_password"
+#------------------------------------------------------------#
+# version: "3.9"
+
+# services:
+#   openhab:
+#     container_name: openHAB
+#     image: "openhab/openhab:3.0.2"
+#     restart: always
+#     depends_on:
+#       - influxdb
+#       - grafana
+#       - mosquitto
+#     network_mode: host
+#     volumes:
+#       - type: bind
+#         source: /etc/localtime
+#         target: /etc/localtime:ro
+#       # Localtime zone
+#       # ex: Europe/Berlin
+#       # You can use also the file located in this directory
+#       # ./timezone
+#       - type: bind
+#         source: /etc/timezone
+#         target: /etc/timezone:ro
+#       - type: bind
+#         source: ./openHAB/addons
+#         target: /openhab/addons
+#       - type: bind
+#         source: ./openHAB/conf
+#         target: /openhab/conf
+#       - type: bind
+#         source: ./openHAB/userdata
+#         target: /openhab/userdata
+#       - type: bind
+#         source: ./openHAB/services
+#         target: /etc/openhab/services
+#       # This is the html location
+#       # Access with "https://192.168.1.81:8080/static/{html_file_name}"
+#       - type: bind
+#         source: ./openHAB/html
+#         target: /etc/openhab/html
+#       # Directory for the trasformation JS files
+#       - type: bind
+#         source: ./openHAB/trasform
+#         target: /etc/openhab/trasform
+#       - type: bind
+#         source: ./openHAB/backup
+#         target: /backups
+#       # - type: bind
+#       #   source: ./openHAB/cont-init.d
+#       #   target: /etc/cont-init.d
+#     environment:
+#       OPENHAB_HTTP_PORT: "8080"
+#       OPENHAB_HTTPS_PORT: "8443"
+#       EXTRA_JAVA_OPTS: "-Duser.timezone=Europe/Berlin"
+#       CRIPTO_POLICY: "unlimited"
+#       USER_ID: 9001
+#       GROUP_ID: 9001
+#     ports:
+#       - "8080:8080"
+#       - "8443:8443"
