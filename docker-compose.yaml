@@ -3,11 +3,12 @@ version: "3.9"
 services:
   db:
     container_name: influxdb
-    image: "arm32v7/influxdb:latest"
+    # image: "arm32v7/influxdb:latest"
+    image: "influxdb:latest"
     ports:
       - "8086:8086"
     restart: always
-    env_file: docker/influxdb/.env
+    env_file: docker/influx/.env
     volumes:
       - type: bind
         source: ./volumes/influxdb/db_data
@@ -35,21 +36,18 @@ services:
       GF_USERS_DßEFAULT_THEME: "dark"
       GF_SERVER_DOMAIN: "localhost"
       GF_SERVER_ROOT_URL: "http://localhost:3000/grafana"
-    config:
-      - source: grafana-config
-        target: /etc/grafana/grafana.ini
     volumes:
       - type: bind
-        source: ./grafana/data
+        source: ./volumes/grafana/data
         target: /var/lib/grafana
       - type: bind
-        source: ./grafana/logs
+        source: ./volumes/grafana/log
         target: /var/log/grafana
       - type: bind
-        source: ./grafana/plugins
+        source: ./volumes/grafana/plugins
         target: /var/lib/grafana/plugins
       - type: bind
-        source: ./grafana/provisioning
+        source: ./volumes/grafana/provisioning
         target: /etc/grafana/provisioning
     secrets:
       - grafana_admin_user
@@ -68,7 +66,6 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
-    configs:
     volumes:
       - type: bind
         source: ./mosquitto/data
