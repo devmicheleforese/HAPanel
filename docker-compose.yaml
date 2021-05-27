@@ -13,9 +13,9 @@ services:
       - type: bind
         source: ./volumes/influxdb/db_data
         target: /var/lib/influxdb
-      - type: bind
-        source: ./docker/influx/init-influxdb.sh
-        target: /init-influxdb.sh
+      # - type: bind
+      #   source: ./docker/influx/init-influxdb.sh
+      #   target: /init-influxdb.sh
     secrets:
       - influx_user
       - influx_passwd
@@ -25,21 +25,18 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana:7.5.6
+    env_file: docker/grafana/.env
     depends_on:
-      - influxdb
+      - db
     ports:
       - "3000:3000"
-    environment:
-      GF_INSTALL_PLUGINS: "grafana-clock-panel 1.0.1,grafana-simple-json-datasource 1.3.5"
-      GF_SECURITY_ADMIN_USER__FILE: "/run/secrets/grafana_admin_user"
-      GF_SECURITY_ADMIN_PASSWORD__FILE: "/run/secrets/grafana_admin_password"
-      GF_USERS_DßEFAULT_THEME: "dark"
-      GF_SERVER_DOMAIN: "localhost"
-      GF_SERVER_ROOT_URL: "http://localhost:3000/grafana"
     volumes:
       - type: bind
         source: ./volumes/grafana/data
         target: /var/lib/grafana
+      - type: bind
+        source: ./volumes/grafana/home
+        target: /usr/share/grafana
       - type: bind
         source: ./volumes/grafana/log
         target: /var/log/grafana
@@ -49,9 +46,6 @@ services:
       - type: bind
         source: ./volumes/grafana/provisioning
         target: /etc/grafana/provisioning
-    secrets:
-      - grafana_admin_user
-      - grafana_admin_password
 
   mosquitto:
     image: eclipse-mosquitto:${MOSQUITTO_VERSION:-latest}
@@ -101,11 +95,6 @@ secrets:
     file: "./docker/influx/secrets/influx_admin_user"
   influx_admin_passwd:
     file: "./docker/influx/secrets/influx_admin_passwd"
-  # Grafana
-  grafana_admin_user:
-    file: "./grafana/secrets/grafana_admin_user"
-  grafana_admin_password:
-    file: "./grafana/secrets/grafana_admin_password"
 #------------------------------------------------------------#
 # version: "3.9"
 
