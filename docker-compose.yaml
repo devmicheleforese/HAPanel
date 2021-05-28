@@ -3,14 +3,13 @@ version: "3.9"
 services:
   db:
     container_name: influxdb
-    image: "arm32v7/influxdb:latest"
+    image: "arm32v7/influxdb:1.8"
     ports:
       - "8086:8086"
     restart: always
-    # env_file: docker/influx/.env
+    env_file: docker/influx/.env
     volumes:
-      - influxdb_data:/var/lib/influxdb2
-      - influxdb_etc:/etc/influxdb2
+      - influxdb_data:/var/lib/influxdb
     # secrets:
     #   - influx_user
     #   - influx_passwd
@@ -46,18 +45,9 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - type: bind
-        source: ./volumes/mosquitto/data
-        target: /mosquitto/data
-      - type: bind
-        source: ./volumes/mosquitto/log
-        target: /mosquitto/log
-      - type: bind
-        source: ./volumes/mosquitto/config/
-        target: /mosquitto/config/
-      - type: bind
-        source: ./docker/mosquitto/docker-entrypoint.sh
-        target: /docker-entrypoint-initdb.d/docker-entrypoint.sh
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+      - mosquitto_config:/mosquitto/config
 
   tasmoadmin:
     container_name: tasmoadmin
@@ -66,16 +56,19 @@ services:
       - "81:80"
     restart: always
     volumes:
-      - type: bind
-        source: ./volumes/tasmoadmin/data
-        target: /data
+      - tasmoadmin_data:/data
 
 volumes:
+  influxdb_data:
   grafana_data:
   grafana_home:
   grafana_log:
   grafana_plugins:
   grafana_provisioning:
+  mosquitto_data:
+  mosquitto_log:
+  mosquitto_config:
+
 secrets:
   # Influx
   influx_user:
