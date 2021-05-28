@@ -1,7 +1,0 @@
-ARG MOSQUITTO_VERSION
-FROM eclipse-mosquitto:${MOSQUITTO_VERSION}
-
-RUN ["mkdir", "-p", "/docker-entrypoint.d"]
-COPY ./docker/mosquitto/docker-entrypoint.sh /docker-entrypoint.d/
-
-ENTRYPOINT ["sh", "/docker-entrypoint.d/docker-entrypoint.sh"]

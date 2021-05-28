@@ -10,16 +10,11 @@ services:
     env_file: docker/influx/.env
     volumes:
       - influxdb_data:/var/lib/influxdb
-    # secrets:
-    #   - influx_user
-    #   - influx_passwd
-    #   - influx_admin_user
-    #   - influx_admin_passwd
 
   grafana:
     container_name: grafana
     image: grafana/grafana:7.5.2
-    env_file: docker/grafana/.env
+    # env_file: docker/grafana/.env
     depends_on:
       - db
     ports:
@@ -32,14 +27,9 @@ services:
       - grafana_provisioning:/etc/grafana/provisioning
 
   mosquitto:
-    image: eclipse-mosquitto:${MOSQUITTO_VERSION:-latest}
-    build:
-      context: .
-      dockerfile: dockerfile.mosquitto
-      args:
-        - MOSQUITTO_VERSION=${MOSQUITTO_VERSION:-latest}
     container_name: mosquitto
-    env_file: docker/mosquitto/.env
+    image: eclipse-mosquitto:2
+    # env_file: docker/mosquitto/.env
     restart: always
     ports:
       - "1883:1883"
