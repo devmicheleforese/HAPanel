@@ -56,17 +56,35 @@ mosquitto_passwd -c /mosquitto/config/mosquitto.passwd mosquitto_openhab
    cat << EOF > mosquitto.conf
    persistence true
    persistence_location /mosquitto/data/
+
    log_dest file /mosquitto/log/mosquitto.log
+
+   allow_anonymous false
+   listener 1883
+   password_file /mosquitto/config/mosquitto.passwd
    EOF
    ```
 
-2. To subscribe to the topic `test`
+2. Set config file
+
+   ```terminal
+   mosquitto --config-file /mosquitto/config/mosquitto.conf
+   ```
+
+3. restart docker container
+
+   ```terminal
+   sudo docker container stop mosquitto
+   sudo docker container restart mosquitto
+   ```
+
+4. To subscribe to the topic `test`
 
    ```terminal
    mosquitto_sub -t test
    ```
 
-3. [optional] Install tree utility
+5. [optional] Install tree utility
 
    ```terminal
    sudo apt-get install tree
