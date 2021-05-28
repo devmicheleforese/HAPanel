@@ -58,6 +58,7 @@ volumes:
   mosquitto_data:
   mosquitto_log:
   mosquitto_config:
+  tasmoadmin_data:
 #------------------------------------------------------------#
 # version: "3.9"
 
