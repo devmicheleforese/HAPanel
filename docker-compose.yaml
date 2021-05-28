@@ -3,16 +3,14 @@ version: "3.9"
 services:
   db:
     container_name: influxdb
-    # image: "arm32v7/influxdb:latest"
-    image: "influxdb:latest"
+    image: "arm32v7/influxdb:latest"
     ports:
       - "8086:8086"
     restart: always
     # env_file: docker/influx/.env
     volumes:
-      - type: bind
-        source: ./volumes/influxdb/db_data
-        target: /var/lib/influxdb
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_etc:/etc/influxdb2
     # secrets:
     #   - influx_user
     #   - influx_passwd
@@ -22,28 +20,17 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana:7.5.2
-    #env_file: docker/grafana/.env
+    env_file: docker/grafana/.env
     depends_on:
       - db
     ports:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      # - type: bind
-      #   source: ./volumes/grafana/data
-      #   target: /var/lib/grafana
-      # - type: bind
-      #   source: ./volumes/grafana/home
-      #   target: /usr/share/grafana
-      # - type: bind
-      #   source: ./volumes/grafana/log
-      #   target: /var/log/grafana
-      # - type: bind
-      #   source: ./volumes/grafana/plugins
-      #   target: /var/lib/grafana/plugins
-      # - type: bind
-      #   source: ./volumes/grafana/provisioning
-      #   target: /etc/grafana/provisioning
+      - grafana_home:/usr/share/grafana
+      - grafana_log:/var/log/grafana
+      - grafana_plugins:/var/lib/grafana/plugins
+      - grafana_provisioning:/etc/grafana/provisioning
 
   mosquitto:
     image: eclipse-mosquitto:${MOSQUITTO_VERSION:-latest}
@@ -85,6 +72,10 @@ services:
 
 volumes:
   grafana_data:
+  grafana_home:
+  grafana_log:
+  grafana_plugins:
+  grafana_provisioning:
 secrets:
   # Influx
   influx_user:
