@@ -58,17 +58,6 @@ volumes:
   mosquitto_data:
   mosquitto_log:
   mosquitto_config:
-
-secrets:
-  # Influx
-  influx_user:
-    file: "./docker/influx/secrets/influx_user"
-  influx_passwd:
-    file: "./docker/influx/secrets/influx_passwd"
-  influx_admin_user:
-    file: "./docker/influx/secrets/influx_admin_user"
-  influx_admin_passwd:
-    file: "./docker/influx/secrets/influx_admin_passwd"
 #------------------------------------------------------------#
 # version: "3.9"
 
