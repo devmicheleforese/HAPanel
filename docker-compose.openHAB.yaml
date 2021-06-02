@@ -9,7 +9,7 @@ services:
       - db
       - grafana
       - mosquitto
-    network_mode: host
+    # network_mode: host
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
