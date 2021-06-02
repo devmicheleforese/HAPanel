@@ -45,7 +45,7 @@
 
 ```terminal
 sudo docker container ls
-sudo docker exec -ti nostalgic_williams /bin/sh
+sudo docker exec -ti mosquitto /bin/sh
 
 mosquitto_passwd -c /mosquitto/config/mosquitto.passwd mosquitto_openhab
 ```
@@ -53,23 +53,25 @@ mosquitto_passwd -c /mosquitto/config/mosquitto.passwd mosquitto_openhab
 1. Config file for mosquitto
 
    ```terminal
-   cat << EOF > mosquitto.conf
+   cat << EOF > /mosquitto/config/mosquitto.conf
    persistence true
    persistence_location /mosquitto/data/
-
-   log_dest file /mosquitto/log/mosquitto.log
-
-   allow_anonymous false
-   listener 1883
-   password_file /mosquitto/config/mosquitto.passwd
-   EOF
    ```
+
+log_dest file /mosquitto/log/mosquitto.log
+
+allow_anonymous false
+listener 1883
+password_file /mosquitto/config/mosquitto.passwd
+EOF
+
+````
 
 2. Set config file
 
-   ```terminal
-   mosquitto --config-file /mosquitto/config/mosquitto.conf
-   ```
+```terminal
+mosquitto --config-file /mosquitto/config/mosquitto.conf
+````
 
 3. restart docker container
 

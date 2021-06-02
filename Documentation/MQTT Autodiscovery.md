@@ -5,7 +5,7 @@
 3. Enter the following
 
    ```terminal
-   SetOption19 1‘
+   SetOption19 1
    ```
 
 4. Go to the inbox and setup the thing
