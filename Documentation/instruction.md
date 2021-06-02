@@ -124,6 +124,12 @@ mosquitto_passwd -c /mosquitto/config/mosquitto.passwd mosquitto_openhab
    sudo pip3 -v install docker-compose
    ```
 
+3. Convenient Command
+
+   ```terminal
+   sudo apt-get install -y libffi-dev libssl-dev python3 python3-pip && sudo apt-get remove python-configparser && sudo pip3 -v install docker-compose
+   ```
+
 ## Initialize Docker container
 
 1. Download the docker-compose script from [here](https://github.com/devmicheleforese/docker-influxdb)
