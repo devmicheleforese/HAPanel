@@ -1,0 +1,6 @@
+ARG MOSQUITTO_VERSION=2
+ARG MOSQUITTO_USER=mosquitto_openhab
+ARG MOSQUITTO_PASSWORD=mosquitto_openhab
+FROM eclipse-mosquitto:2
+
+CMD mosquitto_passwd -b /mosquitto/config/mosquitto.passwd ${MOSQUITTO_USER} ${MOSQUITTO_PASSWORD} && history -c && printf '\n%s\n%s\n%s\n%s\n%s\n%s' 'persistence true' 'persistence_location /mosquitto/data/' 'log_dest file /mosquitto/log/mosquitto.log' 'allow_anonymous false' 'listener 1883' 'password_file /mosquitto/config/mosquitto.passwd' >> /mosquitto/config/mosquitto.conf && mosquitto --config-file /mosquitto/config/mosquitto.conf
