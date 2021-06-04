@@ -94,14 +94,26 @@ mosquitto --config-file /mosquitto/config/mosquitto.conf
 ## Install Docker
 
 1. Install Docker for RasberryPi from [here](https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script)
-2. Execute this commands
+
+2. Download Docker script
 
    ```terminal
    sudo curl -fsSL https://get.docker.com -o ~/get-docker.sh
+   ```
+
+3. Exec docker script
+
+   ```terminal
    sudo sh ~/get-docker.sh
    ```
 
-3. [optional] Add permission to `pi` User to run Docker Commands without root permission
+4. Convenient Command
+
+   ```terminal
+   sudo curl -fsSL https://get.docker.com -o ~/get-docker.sh && sudo sh ~/get-docker.sh
+   ```
+
+5. [optional] Add permission to `pi` User to run Docker Commands without root permission
 
    ```terminal
    sudo usermod -aG docker pi
@@ -131,137 +143,12 @@ mosquitto --config-file /mosquitto/config/mosquitto.conf
    sudo apt-get install -y libffi-dev libssl-dev python3 python3-pip && sudo apt-get remove python-configparser && sudo pip3 -v install docker-compose
    ```
 
-## Initialize Docker container
+## Install Docker and docker-compose
 
-1. Download the docker-compose script from [here](https://github.com/devmicheleforese/docker-influxdb)
-
-   - Use scp to copy file through ssh
-
-     ```terminal
-     scp <source> <destination>
-     ```
-
-     Example:
-
-     ```terminal
-     scp /path/to/docker-compose.yaml pi@<PanelIP>:~/HAPanel/docker-compose.yaml
-     ```
-
-2. Enter in the directory
-
-   ```terminal
-   cd ~/HAPanel
-   ```
-
-3. Exec those commands for create a docker instance of the influx database system
-
-   ```terminal
-   sudo docker-compose up -d
-   ```
-
-## Create Influx database
-
-1. Retrive docker container ID trough
-
-   ```terminal
-   docker container ls
-   ```
-
-2. Exec bash commands in docker container
-
-   ```terminal
-   docker exec -it <docker container ID> /bin/bash
-   ```
-
-3. Enter in influx database
-
-   ```temrminal
-   influx
-   ```
-
-4. Create the Databse
-
-   ```terminal
-   create database openhab3
-   ```
-
-   - To verify:
-
-   ```terminal
-   show databases;
-   ```
-
-5. Open Database
-
-   ```terminal
-   use openhab3
-   ```
-
-6. Create Admin User
-
-   ```terminal
-   create user admin with password 'openhab' with all privileges
-   ```
-
-7. Create influxdb config file
-
-   ```terminal
-   influxd config > /var/lib/influxdb/influxdb.conf
-   ```
-
-8. Change config file
-
-   ```terminal
-   nano influxdb.conf
-   ```
-
-   Change this line
-
-   ```terminal
-   [http]
-      auth-enabled = true
-   ```
-
-9. Authenticate
-
-   ```terminal
-   influxdb
-   auth
-   ```
-
-   - username: admin
-   - password: admin #IDK
-
-10. Change openHAB credentials for DB
-
-    ```terminal
-    sudo nano influxdb.cfg
-    ```
-
-11. Create `openhab` user in influxdb
-
-    ```terminal
-    create user openhab with password 'openhab`
-    ```
-
-## To check if influxdb is active
-
-1. Access with `openhab` user
-
-   ```terminal
-   influx
-   auth
-      username: openhab
-      password: openhab
-   ```
-
-2. Check data
+Convenient script:
 
 ```terminal
-use openhab3
-show measurements
-precision rfc3339
-select * from <table> order by time DeSC limit
+sudo curl -fsSL https://get.docker.com -o ~/get-docker.sh && sudo sh ~/get-docker.sh && sudo apt-get install -y libffi-dev libssl-dev python3 python3-pip && sudo apt-get remove python-configparser && sudo pip3 -v install docker-compose
 ```
 
 ## OpenHAB Docker Suite

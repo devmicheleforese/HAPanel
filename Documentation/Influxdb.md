@@ -1,5 +1,110 @@
 # Influxdb
 
+## Create Influx database
+
+1. Retrive docker container ID trough
+
+   ```terminal
+   docker container ls
+   ```
+
+2. Exec bash commands in docker container
+
+   ```terminal
+   docker exec -it <docker container ID> /bin/bash
+   ```
+
+3. Enter in influx database
+
+   ```temrminal
+   influx
+   ```
+
+4. Create the Databse
+
+   ```terminal
+   create database openhab3
+   ```
+
+   - To verify:
+
+   ```terminal
+   show databases;
+   ```
+
+5. Open Database
+
+   ```terminal
+   use openhab3
+   ```
+
+6. Create Admin User
+
+   ```terminal
+   create user admin with password 'openhab' with all privileges
+   ```
+
+7. Create influxdb config file
+
+   ```terminal
+   influxd config > /var/lib/influxdb/influxdb.conf
+   ```
+
+8. Change config file
+
+   ```terminal
+   nano influxdb.conf
+   ```
+
+   Change this line
+
+   ```terminal
+   [http]
+      auth-enabled = true
+   ```
+
+9. Authenticate
+
+   ```terminal
+   influxdb
+   auth
+   ```
+
+   - username: admin
+   - password: admin #IDK
+
+10. Change openHAB credentials for DB
+
+    ```terminal
+    sudo nano influxdb.cfg
+    ```
+
+11. Create `openhab` user in influxdb
+
+    ```terminal
+    create user openhab with password 'openhab`
+    ```
+
+## To check if influxdb is active
+
+1. Access with `openhab` user
+
+   ```terminal
+   influx
+   auth
+      username: openhab
+      password: openhab
+   ```
+
+2. Check data
+
+```terminal
+use openhab3
+show measurements
+precision rfc3339
+select * from <table> order by time DeSC limit
+```
+
 ## Retention Policy
 
 1. Connect to influx docker container
