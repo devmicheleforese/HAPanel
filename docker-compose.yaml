@@ -1,6 +1,30 @@
 version: "3.9"
 
 services:
+  openhab:
+    container_name: openHAB
+    image: "openhab/openhab:3.0.2"
+    restart: always
+    depends_on:
+      - db
+      - grafana
+      - mosquitto
+    # network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - openhab_addons:/openhab/addons
+      - openhab_config:/openhab/conf
+      - openhab_userdata:/openhab/userdata
+    environment:
+      OPENHAB_HTTP_PORT: "8080"
+      OPENHAB_HTTPS_PORT: "8443"
+      EXTRA_JAVA_OPTS: "-Duser.timezone=Europe/Berlin"
+      CRIPTO_POLICY: "unlimited"
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+
   db:
     container_name: influxdb
     image: "arm32v7/influxdb:1.8"
@@ -13,7 +37,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:7.5.2
+    image: grafana/grafana:7.5.7
     # env_file: docker/grafana/.env
     restart: always
     depends_on:
@@ -29,8 +53,15 @@ services:
 
   mosquitto:
     container_name: mosquitto
-    image: eclipse-mosquitto:2
-    # env_file: docker/mosquitto/.env
+    build:
+      context: .
+      image: dockerfile.mosquitto
+      args:
+        - MOSQUITTO_VERSION=${MOSQUITTO_VERSION}
+        - MOSQUITTO_USER=openhab
+        - MOSQUITTO_PASSWORD=openhab
+    image: eclipse-mosquitto:${MOSQUITTO_VERSION}
+    env_file: docker/mosquitto/.env
     restart: always
     ports:
       - "1883:1883"
@@ -50,6 +81,9 @@ services:
       - tasmoadmin_data:/data
 
 volumes:
+  openhab_addons:
+  openhab_config:
+  openhab_userdata:
   influxdb_data:
   grafana_data:
   grafana_home:
@@ -60,64 +94,3 @@ volumes:
   mosquitto_log:
   mosquitto_config:
   tasmoadmin_data:
-#------------------------------------------------------------#
-# version: "3.9"
-
-# services:
-#   openhab:
-#     container_name: openHAB
-#     image: "openhab/openhab:3.0.2"
-#     restart: always
-#     depends_on:
-#       - influxdb
-#       - grafana
-#       - mosquitto
-#     network_mode: host
-#     volumes:
-#       - type: bind
-#         source: /etc/localtime
-#         target: /etc/localtime:ro
-#       # Localtime zone
-#       # ex: Europe/Berlin
-#       # You can use also the file located in this directory
-#       # ./timezone
-#       - type: bind
-#         source: /etc/timezone
-#         target: /etc/timezone:ro
-#       - type: bind
-#         source: ./openHAB/addons
-#         target: /openhab/addons
-#       - type: bind
-#         source: ./openHAB/conf
-#         target: /openhab/conf
-#       - type: bind
-#         source: ./openHAB/userdata
-#         target: /openhab/userdata
-#       - type: bind
-#         source: ./openHAB/services
-#         target: /etc/openhab/services
-#       # This is the html location
-#       # Access with "https://192.168.1.81:8080/static/{html_file_name}"
-#       - type: bind
-#         source: ./openHAB/html
-#         target: /etc/openhab/html
-#       # Directory for the trasformation JS files
-#       - type: bind
-#         source: ./openHAB/trasform
-#         target: /etc/openhab/trasform
-#       - type: bind
-#         source: ./openHAB/backup
-#         target: /backups
-#       # - type: bind
-#       #   source: ./openHAB/cont-init.d
-#       #   target: /etc/cont-init.d
-#     environment:
-#       OPENHAB_HTTP_PORT: "8080"
-#       OPENHAB_HTTPS_PORT: "8443"
-#       EXTRA_JAVA_OPTS: "-Duser.timezone=Europe/Berlin"
-#       CRIPTO_POLICY: "unlimited"
-#       USER_ID: 9001
-#       GROUP_ID: 9001
-#     ports:
-#       - "8080:8080"
-#       - "8443:8443"
