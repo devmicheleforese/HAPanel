@@ -4,4 +4,4 @@ ARG MOSQUITTO_PASSWORD=mosquitto_openhab
 FROM eclipse-mosquitto:${MOSQUITTO_VERSION}
 
 # Sets the mosquitto for authentication
-RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd ${MOSQUITTO_USER} ${MOSQUITTO_PASSWORD} && printf '\n%s\n%s\n%s\n%s\n%s\n%s' 'persistence true' 'persistence_location /mosquitto/data/' 'log_dest file /mosquitto/log/mosquitto.log' 'allow_anonymous false' 'listener 1883' 'password_file /mosquitto/config/mosquitto.passwd' >> /mosquitto/config/mosquitto.conf && mosquitto --config-file /mosquitto/config/mosquitto.conf && history -c
+RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd $MOSQUITTO_USER $MOSQUITTO_PASSWORD && printf '\n%s\n%s\n%s\n%s\n%s\n%s' 'persistence true' 'persistence_location /mosquitto/data/' 'log_dest file /mosquitto/log/mosquitto.log' 'allow_anonymous false' 'listener 1883' 'password_file /mosquitto/config/mosquitto.passwd' >> /mosquitto/config/mosquitto.conf && mosquitto --config-file /mosquitto/config/mosquitto.conf && history -c

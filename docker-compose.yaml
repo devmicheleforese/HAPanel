@@ -55,7 +55,7 @@ services:
     container_name: mosquitto
     build:
       context: .
-      image: dockerfile.mosquitto
+      dockerfile: dockerfile.mosquitto
       args:
         - MOSQUITTO_VERSION=${MOSQUITTO_VERSION}
         - MOSQUITTO_USER=openhab
