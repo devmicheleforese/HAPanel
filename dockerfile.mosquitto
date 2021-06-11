@@ -8,7 +8,7 @@ FROM eclipse-mosquitto:${MOSQUITTO_VERSION}
 
 RUN touch /mosquitto/config/mosquitto.passwd
 
-RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd $MOSQUITTO_USER $MOSQUITTO_PASSWORD
+RUN /bin/bash -c 'mosquitto_passwd -b /mosquitto/config/mosquitto.passwd $MOSQUITTO_USER $MOSQUITTO_PASSWORD'
 
 COPY docker/mosquitto/config/mosquitto.conf /mosquitto/config/mosquitto.conf
 
