@@ -70,6 +70,9 @@ services:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
       - mosquitto_config:/mosquitto/config
+    secrets:
+      - mosquitto_user
+      - mosquitto_passwd
 
   tasmoadmin:
     container_name: tasmoadmin
@@ -94,3 +97,9 @@ volumes:
   mosquitto_log:
   mosquitto_config:
   tasmoadmin_data:
+
+secrets:
+  mosquitto_user:
+    file: docker/mosquitto/secrets/mosquitto.user
+  mosquitto_passwd:
+    file: docker/mosquitto/secrets/mosquitto.passwd
