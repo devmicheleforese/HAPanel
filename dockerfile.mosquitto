@@ -3,6 +3,6 @@ FROM eclipse-mosquitto:2
 VOLUME [ "/mosquitto/config" ]
 
 # Sets the mosquitto for authentication
-COPY docker/mosquitto/config/mosquitto.conf docker/mosquitto/config/ /mosquitto/config/
+COPY docker/mosquitto/config/mosquitto.conf docker/mosquitto/config/mosquitto.passwd /mosquitto/config/
 
 RUN mosquitto_passwd -U /mosquitto/config/mosquitto.passwd
