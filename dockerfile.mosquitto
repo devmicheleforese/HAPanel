@@ -6,7 +6,7 @@ FROM eclipse-mosquitto:${MOSQUITTO_VERSION}
 # Sets the mosquitto for authentication
 RUN touch /mosquitto/config/mosquitto.passwd
 
-RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd "$(cat run/secrets/mosquitto_user)" "$(cat run/secrets/mosquitto_passwd)"
+RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd "$(cat /run/secrets/mosquitto_user)" "$(cat /run/secrets/mosquitto_passwd)"
 
 COPY docker/mosquitto/config/mosquitto.conf /mosquitto/config/mosquitto.conf
 
