@@ -4,7 +4,9 @@ ARG MOSQUITTO_PASSWORD=mosquitto_openhab
 FROM eclipse-mosquitto:${MOSQUITTO_VERSION}
 
 # Sets the mosquitto for authentication
-RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd $MOSQUITTO_USER $MOSQUITTO_PASSWORD
+# RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd $MOSQUITTO_USER $MOSQUITTO_PASSWORD
+
+RUN ["mosquitto_passwd", "-b", "/mosquitto/config/mosquitto.passwd", "$MOSQUITTO_USER", "$MOSQUITTO_PASSWORD"]
 
 COPY docker/mosquitto/config/mosquitto.conf /mosquitto/config/mosquitto.conf
 
