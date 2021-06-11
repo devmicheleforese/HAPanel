@@ -57,10 +57,6 @@ services:
     build:
       context: .
       dockerfile: dockerfile.mosquitto
-      args:
-        - MOSQUITTO_VERSION=2
-        - MOSQUITTO_USER=openhab
-        - MOSQUITTO_PASSWORD=openhab
     image: eclipse-mosquitto:2
     restart: always
     ports:
@@ -70,9 +66,6 @@ services:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
       - mosquitto_config:/mosquitto/config
-    secrets:
-      - mosquitto_user
-      - mosquitto_passwd
 
   tasmoadmin:
     container_name: tasmoadmin
@@ -97,9 +90,3 @@ volumes:
   mosquitto_log:
   mosquitto_config:
   tasmoadmin_data:
-
-secrets:
-  mosquitto_user:
-    file: docker/mosquitto/secrets/mosquitto.user
-  mosquitto_passwd:
-    file: docker/mosquitto/secrets/mosquitto.passwd
