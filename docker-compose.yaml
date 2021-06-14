@@ -61,7 +61,6 @@ services:
       - "9001:9001"
     volumes:
       - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
       - mosquitto_config:/mosquitto/config
 
   tasmoadmin:
