@@ -57,9 +57,9 @@ services:
   mosquitto:
     container_name: mosquitto
     image: acmesystems/openhab_mosquitto:1
-    build: .
+    build:
       context: .
-      dockerfile: docker/dockerfile.mosquitto
+      dockerfile: ./docker/dockerfile.mosquitto
     env_file: docker/mosquitto/.env
     restart: always
     ports:
