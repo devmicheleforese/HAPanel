@@ -29,3 +29,7 @@ docker build -t acmesystems/openhab_tasmoadmin:1 -f docker/dockerfile.tasmoadmin
 
 docker push acmesystems/openhab_tasmoadmin:1
 ```
+
+```terminal
+docker buildx build --push --platform linux/arm/v7 --tag acmesystems/openhab_openhab:1 -f docker/dockerfile.openhab .
+```
