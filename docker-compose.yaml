@@ -53,11 +53,8 @@ services:
 
   mosquitto:
     container_name: mosquitto
+    image: acmesystems/openhab_mosquitto:1
     env_file: docker/mosquitto/.env
-    # build:
-    #   context: .
-    #   dockerfile: dockerfile.mosquitto
-    image: eclipse-mosquitto:2
     restart: always
     ports:
       - "1883:1883"

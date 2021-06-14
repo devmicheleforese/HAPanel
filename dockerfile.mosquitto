@@ -1,11 +1,8 @@
 FROM eclipse-mosquitto:2
 
-
 # Sets the mosquitto for authentication
-RUN touch /mosquitto/config/mosquitto.passwd
-COPY docker/mosquitto/config/mosquitto.conf /mosquitto/config/
+COPY docker/mosquitto/config/mosquitto.conf /mosquitto/config/mosquitto.conf
 
-RUN mosquitto_passwd -b /mosquitto/config/mosquitto.passwd openhab openhab
+RUN touch /mosquitto/config/mosquitto.passwd && mosquitto_passwd -b /mosquitto/config/mosquitto.passwd openhab openhab
 
 VOLUME [ "/mosquitto/config" ]
-CMD ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
