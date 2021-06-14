@@ -3,7 +3,7 @@ version: "3.9"
 services:
   openhab:
     container_name: openHAB
-    image: "openhab/openhab:3.0.2"
+    image: acmesystems/openhab_openhab:1
     restart: always
     depends_on:
       - db
@@ -27,7 +27,7 @@ services:
 
   db:
     container_name: influxdb
-    image: "arm32v7/influxdb:1.8"
+    image: acmesystems/openhab_influxdb:1
     ports:
       - "8086:8086"
     restart: always
@@ -37,7 +37,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:7.5.7
+    image: acmesystems/openhab_grafana:1
     # env_file: docker/grafana/.env
     restart: always
     depends_on:
@@ -65,7 +65,7 @@ services:
 
   tasmoadmin:
     container_name: tasmoadmin
-    image: raymondmm/tasmoadmin:v1.7.0
+    image: acmesystems/openhab_tasmoadmin:1
     ports:
       - "81:80"
     restart: always
