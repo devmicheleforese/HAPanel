@@ -71,8 +71,8 @@ services:
 
   tasmoadmin:
     container_name: tasmoadmin
-    image: acmesystems/openhab_tasmoadmin:1
-    # image: raymondmm/tasmoadmin:v1.7.0
+    # image: acmesystems/openhab_tasmoadmin:1
+    image: raymondmm/tasmoadmin:v1.7.0
     ports:
       - "81:80"
     restart: always
