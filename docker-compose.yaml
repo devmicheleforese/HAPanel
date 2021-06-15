@@ -8,7 +8,6 @@ services:
     restart: always
     depends_on:
       - db
-      - grafana
       - mosquitto
     # network_mode: host
     volumes:
